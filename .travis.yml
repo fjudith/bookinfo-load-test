@@ -1,0 +1,37 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+install: true
+
+env:
+  global:
+  - GROUP=fjudith COMMIT=$TRAVIS_COMMIT TAG=$TRAVIS_TAG REPO=bookinfo-load-test;
+  - secure: "fpwB2sr0KZ+vIjzktqZQnY67c3vWRtTCPXAZQ3t1ofXkJBW8CYUnjBuzCf9/lE9AD1bQNeogwMAJljtZsarI6ySV5AbnXWpKoaR1+dKkuklc/YJ/0IY5E5jR7erHjI9D52cZj6YAr8dzgW9+R0m82OHQrVHmsDQ3Zo7s+6URIOmV0j6846KZ7gxSDXRl9eAbP1bkDqxIPcZcKc2fzsbnuVvDtfUpLmg7tvF81S+iMzj6oG+FwexhlGv8D1Z++beyzlvXTBncOsKsEwDjtLvUneJhdPcmZp3b8CRSDXFYjooqOHsU+VGNTXr3tPu1h5O5gzTtdy6PZaKNWkYyGQIeNZGWEvD3Aor23h8cDtDJ5IxRMVafro5AlqptrYsAWE5KSRDXLrY0D9Z7cvcmcHnHP0VUzdBaA/3gstvFF6RV4OCV49Q2WIvjE4OcKEIS1p9jGAZ+B37nnnlYqKiZcvPI1UBOho8b4WKJQZTYy+/R4axGHk7pbqsRKNNAyX4oLlcdUhnXJJ5G+7ytFeEa54+8QEORZ9KGf0KaigN1xSTUAJmuxY8jODJ0FfIaHmUvaaiJP3nqAvXUB2tQArHe9Bq9IcinIk7fT4yGxh3HNZoreMJPkkICc3nEUO6MiOKNoVurEIM83Ykkgp+DgsjmNBqwMz+FmSqSXG4JArHRdpRYp4I="
+  - secure: "ipoVJEmS2Xng/jSf32Xb+qs1HITWNW6pIG0PsAyAvPXGApq0RdD+jT4Caw1bfXh5CHzW6lqo6KTguCXMaTEtjrPcM+ekO4Ob2wvjsxwI0nlHjCubBrC8zO7JYpBig7QdO8WNAQr8qOBIgsxEqXGl6sPSZBx5kNTjczkM9gOgkFW/efTwpE949CBu+7UWgs9aaOQJuPTqVp8KGpNoQCsbqV8NvbPsmbuvMirfQAdFlSE3N7uS9TETfyHkyQa01R0raiR30bd2wqEofpnSy1CEDvZASTAneLlRTZIyBKko25fbFfFpHB3WiNXZtffdJgjL8FRBwtQ9TIMZvmgePVTP7iLnLEhCX9UOwGiZJ90fscXkSUk+vomIizDPcVqQ2JwAnWkwGtUcLAtnlUwQJGGoxLg4flix8TacWHC25IuZ2F5SWdd6GutfdcsQbtQpf4YW780k428ta2F6YBpfvAbg1OZkzoEqevGwtAYUSrWR/ZWzL9NqnY8f1ZnENdSOcRnK0Guio5kCMdu3LIrJ6zmfiulyExF02nxPz/VfrElAFr0MbGsu3j3yXxXujQOQOQh2pWCKh7Lim2KVHoRJYLKCW1weHeF26U5kN6lot/R4d6G7DVorQJvqIhQ2wgrF4cXFxxMJUr/VNc7NLuwely1ak1b/RYaK6WDHHcSgO63Wk28="
+
+script:
+  - set -e
+  # Download istio
+  - curl -L https://github.com/istio/istio/releases/download/1.0.4/istio-1.0.4-linux.tar.gz | tar xvzf -
+  # Deploy consul
+  - pushd istio-1.0.4/install/consul/
+  - docker-compose -f istio.yaml up -d
+  - popd
+  # Deploy Bookinfo
+  - pushd istio-1.0.4/samples/bookinfo/platform/consul
+  - docker-compose -f bookinfo.yaml up -d
+  - popd
+  # Buid and run bookinfo-load-test
+  - docker build -t ${GROUP}/${REPO}:${COMMIT} .
+  - docker run --rm --net consul_istiomesh -t ${GROUP}/${REPO}:${COMMIT} -d 180 -h http://productpage -c 250 -r 60
+
+after_success:
+  - set -e;
+  - if [ -z "$DOCKER_PASS" ] ; then
+      echo "This is a build triggered by an external PR. Skipping docker push.";
+      exit 0;
+    fi;
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS;
+  - ./push.sh
