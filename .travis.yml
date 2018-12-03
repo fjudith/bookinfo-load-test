@@ -25,7 +25,7 @@ script:
   - popd
   # Buid and run bookinfo-load-test
   - docker build -t ${GROUP}/${REPO}:${COMMIT} .
-  - docker run --rm --net consul_istiomesh -t ${GROUP}/${REPO}:${COMMIT} -d 180 -h http://productpage -c 250 -r 60
+  - docker run --rm --net consul_istiomesh -t ${GROUP}/${REPO}:${COMMIT} -d 180 -h http://localhost:9081 -c 250 -r 60
 
 after_success:
   - set -e;
