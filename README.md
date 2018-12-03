@@ -1,6 +1,6 @@
-[![](https://images.microbadger.com/badges/image/fjudith/load-test.svg)](https://microbadger.com/images/fjudith/load-test "Get your own image badge on microbadger.com")
-[![Docker Repository on Quay](https://quay.io/repository/fjudith/load-test/status "Docker Repository on Quay")](https://quay.io/repository/fjudith/load-test)
-[![Build Status](https://travis-ci.org/fjudith/load-test.svg?branch=master)](https://travis-ci.org/fjudith/load-test)
+[![](https://images.microbadger.com/badges/image/fjudith/bookinfo-load-test.svg)](https://microbadger.com/images/fjudith/bookinfo-load-test "Get your own image badge on microbadger.com")
+[![Docker Repository on Quay](https://quay.io/repository/fjudith/bookinfo-load-test/status "Docker Repository on Quay")](https://quay.io/repository/fjudith/bookinfo-load-test)
+[![Build Status](https://travis-ci.org/fjudith/bookinfo-load-test.svg?branch=master)](https://travis-ci.org/fjudith/bookinfo-load-test)
 
 # Load / Integration Tests
 
@@ -20,5 +20,5 @@ These tests simulate actual end user usage of the application. They are used to 
 
 
 ## Running in Docker Container
-* Build `docker build -t load-test .`
-* Run `docker run load-test -h [host] -c [number of clients] -r [number of requests]`
+* Build `docker build -t bookinfo-load-test .`
+* Run `docker run bookinfo-load-test -h [host] -c [number of clients] -r [number of requests]`
