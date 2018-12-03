@@ -10,6 +10,7 @@ RUN apk add --no-cache curl python-dev build-base git libtool pkgconfig autoconf
 
 ADD locustfile.py /config/locustfile.py
 ADD runLocust.sh /usr/local/bin/runLocust.sh
+RUN chmod +x /usr/local/bin/runLocust.sh
 
 ENV LOCUST_FILE /config/locustfile.py
 
