@@ -1,4 +1,4 @@
-FROM python:3.7-alpine
+FROM python:3.6-alpine
 
 LABEL maintainer="Florian JUDITH <florian.judith.b@gmail.com>"
 
