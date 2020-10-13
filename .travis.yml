@@ -21,21 +21,22 @@ before_script:
   - mv kind-linux-amd64 kind
   - export PATH=$PATH:$PWD
   - kind create cluster --config=${TRAVIS_BUILD_DIR}/kind_config.yaml
-  - export KUBECONFIG="$(kind get kubeconfig-path)"
+  
   - docker pull kubernetes/pause
   - kind load docker-image kubernetes/pause
-  - cp "$(kind get kubeconfig-path --name="kind")" /tmp/admin.conf
-  # Istio
+  # - export KUBECONFIG="$(kind get kubeconfig-path)"
+  # - cp "$(kind get kubeconfig-path --name="kind")" /tmp/admin.conf
+  ## Istio
   - curl -L https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-={ISTIO_VERSION}-linux.tar.gz | tar xvzf -
   - chmod +x kind-linux-amd64
   - export PATH=$PATH:istio-${ISTIO_VERSION}/bin
   - istioctl install
-  # Bookinfo
+  ## Bookinfo
   - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/platform/kube/bookinfo.yaml --wait
   - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/platform/kube/productpage-nodeport.yaml --wait
 
 script:
-  # Buid and run bookinfo-load-test
+  ## Buid and run bookinfo-load-test
   - docker build -t ${REPO}:${COMMIT} .
   - docker run --rm -t ${REPO}:${COMMIT} -d 180 -h http://localhost:9080 -c 250 -r 60
 
