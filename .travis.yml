@@ -15,12 +15,12 @@ env:
   - INSTALL_METALLB=true
 
 before_script:
-  # Kind
-  - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
-  - wget https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64
-  - chmod +x kind-linux-amd64
-  - mv kind-linux-amd64 kind
-  - export PATH=$PATH:$PWD
+  ## Kubectl
+  - curl -Lo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl
+  - chmod +x /usr/local/bin/kubectl
+  ## Kind
+  - curl -Lo /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64
+  - chmod +x /usr/local/bin/kind
   - kind create cluster --config=${TRAVIS_BUILD_DIR}/kind_config.yaml
   - docker pull kubernetes/pause
   - kind load docker-image kubernetes/pause
@@ -29,9 +29,10 @@ before_script:
   ## Istio
   - curl -L https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-${ISTIO_VERSION}-linux-amd64.tar.gz | tar xvzf -
   - chmod +x istio-${ISTIO_VERSION}/bin/istioctl
-  - export PATH=$PATH:$PWD/istio-${ISTIO_VERSION}/bin
-  - istioctl install
+  - ls -s /usr/local/bin/istioctl ${PWD}/istio-${ISTIO_VERSION}/bin/istioctl
+  - istioctl install --set profile=demo --force
   ## Bookinfo
+  - kubectl label namespace default isio-injection=true
   - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/platform/kube/bookinfo.yaml --wait
   - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/platform/kube/productpage-nodeport.yaml --wait
 
