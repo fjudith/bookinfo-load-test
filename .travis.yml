@@ -13,6 +13,7 @@ env:
   - REPO=fjudith/bookinfo-load-test
   - TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
   - INSTALL_METALLB=true
+  - COMMIT=${TRAVIS_COMMIT::8}
 
 before_script:
   ## Kubectl
