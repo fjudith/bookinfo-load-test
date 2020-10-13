@@ -38,9 +38,9 @@ before_script:
 
 script:
   ## Buid and run bookinfo-load-test
+  - BOOKINFO=$(kubectl get svc )
   - docker build -t ${REPO}:${COMMIT} .
   - docker run --rm -t ${REPO}:${COMMIT} -d 180 -h http://localhost:9080 -c 250 -r 60
-
 after_success:
   - docker tag ${REPO}:${COMMIT} ${REPO}:${TAG}
   - if [ -z "$DOCKER_PASS" ] ; then
