@@ -20,7 +20,7 @@ before_script:
   - chmod +x kind-linux-amd64
   - mv kind-linux-amd64 kind
   - export PATH=$PATH:$PWD
-  - kind create cluster --config=$TRAVIS_BUILD_DIR/hack/kind_config.yaml
+  - kind create cluster --config=${TRAVIS_BUILD_DIR}/kind_config.yaml
   - export KUBECONFIG="$(kind get kubeconfig-path)"
   - docker pull kubernetes/pause
   - kind load docker-image kubernetes/pause
