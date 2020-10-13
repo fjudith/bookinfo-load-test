@@ -28,7 +28,7 @@ before_script:
   # - cp "$(kind get kubeconfig-path --name="kind")" /tmp/admin.conf
   ## Istio
   - curl -L https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-${ISTIO_VERSION}-linux-amd64.tar.gz | tar xvzf -
-  - chmod +x kind-linux-amd64
+  - chmod +x istio-${ISTIO_VERSION}/bin/istioctl
   - export PATH=$PATH:$PWD/istio-${ISTIO_VERSION}/bin
   - istioctl install
   ## Bookinfo
