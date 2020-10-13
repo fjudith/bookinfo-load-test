@@ -7,7 +7,7 @@ install: true
 
 env:
   global:
-  - K8S_VERSION=1.19.0
+  - K8S_VERSION=1.19.1
   - KIND_VERSION=0.9.0
   - ISTIO_VERSION=1.7.3
   - REPO=fjudith/bookinfo-load-test
