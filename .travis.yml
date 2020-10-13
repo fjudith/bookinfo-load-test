@@ -7,26 +7,40 @@ install: true
 
 env:
   global:
-  - GROUP=fjudith COMMIT=$TRAVIS_COMMIT TAG=$TRAVIS_TAG REPO=bookinfo-load-test;
+  - K8S_VERSION=1.19.0
+  - KIND_VERSION=0.9.0
+  - ISTIO_VERSION=1.7.3
+  - REPO=fjudith/bookinfo-load-test
+  - TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+
+before_script:
+  # Kind
+  - curl -Lo kubectl \https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+  - wget https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64
+  - chmod +x kind-linux-amd64
+  - mv kind-linux-amd64 kind
+  - export PATH=$PATH:$PWD
+  - kind create cluster --config=$TRAVIS_BUILD_DIR/hack/kind_config.yaml
+  - export KUBECONFIG="$(kind get kubeconfig-path)"
+  - docker pull kubernetes/pause
+  - kind load docker-image kubernetes/pause
+  - cp "$(kind get kubeconfig-path --name="kind")" /tmp/admin.conf
+  # Istio
+  - curl -L https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-={ISTIO_VERSION}-linux.tar.gz | tar xvzf -
+  - chmod +x kind-linux-amd64
+  - export PATH=$PATH:istio-${ISTIO_VERSION}/bin
+  - istioctl install
+  # Bookinfo
+  - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/platform/kube/bookinfo.yaml --wait
+  - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/platform/kube/productpage-nodeport.yaml --wait
 
 script:
-  - set -e
-  # Download istio
-  - curl -L https://github.com/istio/istio/releases/download/1.2.5/istio-1.2.5-linux.tar.gz | tar xvzf -
-  # Deploy consul
-  - pushd istio-1.2.5/install/consul/
-  - docker-compose -f istio.yaml up -d
-  - popd
-  # Deploy Bookinfo
-  - pushd istio-1.2.5/samples/bookinfo/platform/consul
-  - docker-compose -f bookinfo.yaml up -d
-  - popd
   # Buid and run bookinfo-load-test
-  - docker build -t ${GROUP}/${REPO}:${COMMIT} .
-  - docker run --rm --net consul_istiomesh -t ${GROUP}/${REPO}:${COMMIT} -d 180 -h http://consul_productpage-v1_1:9080 -c 250 -r 60
+  - docker build -t ${REPO}:${COMMIT} .
+  - docker run --rm -t ${REPO}:${COMMIT} -d 180 -h http://localhost:9080 -c 250 -r 60
 
 after_success:
-  - set -e;
+  - docker tag ${REPO}:${COMMIT} ${REPO}:${TAG}
   - if [ -z "$DOCKER_PASS" ] ; then
       echo "This is a build triggered by an external PR. Skipping docker push.";
       exit 0;
