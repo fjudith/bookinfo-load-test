@@ -48,7 +48,7 @@ before_script:
 script:
   ## Binary test
   - kubectl get po,svc,ing --all-namespaces -o wide
-  - LOCUST_FILE="${TRAVIS_BUILD_DIR}/src/locustfile.py"
+  - export LOCUST_FILE="${TRAVIS_BUILD_DIR}/src/locustfile.py"
   - chmod a+x ${TRAVIS_BUILD_DIR}/src/runLocust.sh
   - ${TRAVIS_BUILD_DIR}/src/runLocust.sh -d 5 -h http://localhost -u 250 -r 60
   ## Build and run bookinfo-load-test
