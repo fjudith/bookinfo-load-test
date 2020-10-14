@@ -42,7 +42,7 @@ before_script:
   - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/networking/bookinfo-gateway.yaml --wait
 
 script:
-  ## Buid and run bookinfo-load-test
+  ## Build and run bookinfo-load-test
   - kubectl get po,svc,gateway,virtualservice --all-namespaces
   - docker build -t ${REPO}:${COMMIT} .
   - docker run --rm -t ${REPO}:${COMMIT} -d 180 -h http://127.0.0.1:${INGRESS_PORT} -c 250 -r 60
@@ -53,4 +53,4 @@ after_success:
       exit 0;
     fi;
   - docker login -u $DOCKER_USER -p $DOCKER_PASS;
-  - ./push.sh
+  - docker push ${REPO}:${TAG}
