@@ -15,6 +15,9 @@ env:
   - INSTALL_METALLB=true
   - COMMIT=${TRAVIS_COMMIT::8}
 
+before_install:
+  - pip3 install locust
+
 before_script:
   ## Kubectl
   - sudo curl -Lo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl
@@ -43,9 +46,12 @@ before_script:
   - kubectl apply -f ${TRAVIS_BUILD_DIR}/hack/bookinfo-ingress.yaml
 
 script:
-  ## Build and run bookinfo-load-test
+  ## Binary test
   - kubectl get po,svc,ing --all-namespaces -o wide
-  - curl http://localhost/productpage
+  - LOCUSTFILE="${TRAVIS_BUILD_DIR}/src/locustfile.py"
+  - ${TRAVIS_BUILD_DIR}/src/runLocust.sh -d 5 -h http://localhost -u 250 -r 60
+  - popd 
+  ## Build and run bookinfo-load-test
   - docker build -t ${REPO}:${COMMIT} .
   - docker run --rm -t ${REPO}:${COMMIT} -d 5 -h http://localhost -u 250 -r 60
 after_success:
