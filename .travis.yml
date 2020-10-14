@@ -35,6 +35,7 @@ before_script:
   - chmod +x istio-${ISTIO_VERSION}/bin/istioctl
   - sudo ln -s ${PWD}/istio-${ISTIO_VERSION}/bin/istioctl /usr/local/bin/istioctl
   - istioctl install --set profile=default --force
+  - export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
   ## Bookinfo
   - kubectl label namespace default isio-injection=true
   - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/platform/kube/bookinfo.yaml --wait
@@ -42,9 +43,9 @@ before_script:
 
 script:
   ## Buid and run bookinfo-load-test
-  - kubectl get svc --all-namespaces
+  - kubectl get po,svc,gateway,virtualservice --all-namespaces
   - docker build -t ${REPO}:${COMMIT} .
-  - docker run --rm -t ${REPO}:${COMMIT} -d 180 -h http://localhost:9080 -c 250 -r 60
+  - docker run --rm -t ${REPO}:${COMMIT} -d 180 -h http://127.0.0.1:${INGRESS_PORT} -c 250 -r 60
 after_success:
   - docker tag ${REPO}:${COMMIT} ${REPO}:${TAG}
   - if [ -z "$DOCKER_PASS" ] ; then
