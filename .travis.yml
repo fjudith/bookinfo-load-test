@@ -40,7 +40,8 @@ before_script:
   - kubectl label namespace default isio-injection=true
   - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/platform/kube/bookinfo.yaml --wait
   - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/networking/bookinfo-gateway.yaml --wait
-  - cat << EOF | kubectl apply -f -
+  - |
+    cat << EOF | kubectl apply -f -
     apiVersion: networking.k8s.io/v1beta1
     kind: Ingress
     metadata:
