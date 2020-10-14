@@ -1,0 +1,27 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bookinfo-load-test
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: bookinfo-load-test
+    spec:
+      containers:
+        - name: bookinfo-load-test
+          image: docker.io/fjudith/bookinfo-load-test:latest
+          command:
+            - "/usr/local/bin/runLocust.sh"
+          args:
+            - "-d"
+            - "5"
+            - "-h"
+            - "http://productpage.default:9080"
+            - "-u"
+            - "250"
+            - "-r"
+            - "60"
+      restartPolicy: "Never"
