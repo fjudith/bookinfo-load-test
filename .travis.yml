@@ -1,4 +1,5 @@
 language: generic
+python: 3.6
 sudo: required
 services:
   - docker
@@ -16,7 +17,7 @@ env:
   - COMMIT=${TRAVIS_COMMIT::8}
 
 before_install:
-  - pip3 install locust
+  - pip install locust
 
 before_script:
   ## Kubectl
