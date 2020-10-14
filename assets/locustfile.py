@@ -1,19 +1,12 @@
-import base64
+from locust import HttpUser, task, between
 
-from locust import HttpUser, TaskSet, task
-from random import randint, choice
-from io import BytesIO
+class MyUser(HttpUser):
+    wait_time = between(5, 15)
 
+    @task(4)
+        def index(self):
+            self.client.get("/")
 
-class WebTasks(TaskSet):
-
-    @task
-    def load(self):
-
-        self.client.get("/productpage")
-
-
-class Web(HttpUser):
-    task_set = WebTasks
-    min_wait = 0
-    max_wait = 0
+    @task(1)
+    def productpage(self):
+        self.client.get("/productpage/")
