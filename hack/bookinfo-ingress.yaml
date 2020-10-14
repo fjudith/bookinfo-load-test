@@ -5,12 +5,12 @@ metadata:
 spec:
   rules:
   - http:
-    paths:
-    - path: "/"
-      backend:
-        serviceName: productpage
-        servicePort: 9080
-    - path: "/productpage"
-      backend:
-        serviceName: productpage
-        servicePort: 9080
+      paths:
+        - path: "/"
+          backend:
+            serviceName: productpage
+            servicePort: 9080
+        - path: "/productpage"
+          backend:
+            serviceName: productpage
+            servicePort: 9080
