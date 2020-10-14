@@ -8,8 +8,8 @@ RUN apk add --no-cache curl python3-dev build-base git libffi-dev libtool gcc pk
     apk del python3-dev build-base git libtool pkgconfig autoconf gcc zeromq-dev automake wget ca-certificates && \
     apk add --no-cache libstdc++ libzmq
 
-COPY assets/locustfile.py /config/locustfile.py
-COPY assets/runLocust.sh /usr/local/bin/runLocust.sh
+COPY src/locustfile.py /config/locustfile.py
+COPY src/runLocust.sh /usr/local/bin/runLocust.sh
 RUN chmod +x /usr/local/bin/runLocust.sh
 
 ENV LOCUST_FILE /config/locustfile.py
