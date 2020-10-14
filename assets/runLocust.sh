@@ -8,7 +8,7 @@ HOST="${1}"
 SCRIPT_NAME=`basename "$0"`
 INITIAL_DELAY=1
 TARGET_HOST="$HOST"
-CLIENTS=2
+USERS=2
 REQUESTS=10
 
 
@@ -45,8 +45,8 @@ do_exec() {
   #     exit 1
   # fi
 
-  echo "Will run $LOCUST_FILE against $TARGET_HOST. Spawning $CLIENTS clients and $REQUESTS total requests."
-  locust --host=$TARGET_HOST -f $LOCUST_FILE --clients=$CLIENTS --hatch-rate=5 --run-time=$REQUESTS --no-web --only-summary
+  echo "Will run $LOCUST_FILE against $TARGET_HOST. Spawning $USERS USERS and $REQUESTS total requests."
+  locust --host=$TARGET_HOST --locustfile=$LOCUST_FILE --users=$USERS --spawn-rate=5 --run-time=$REQUESTS --only-summary
   echo "done"
 }
 
@@ -58,7 +58,7 @@ Usage:
 Options:
   -d  Delay before starting
   -h  Target host url, e.g. http://localhost/
-  -c  Number of clients (default 2)
+  -u  Number of USERS (default 2)
   -r  Number of requests (default 10)
 
 Description:
@@ -70,7 +70,7 @@ EOF
 
 
 
-while getopts ":d:h:c:r:" o; do
+while getopts ":d:h:u:r:" o; do
   case "${o}" in
     d)
         INITIAL_DELAY=${OPTARG}
@@ -80,9 +80,9 @@ while getopts ":d:h:c:r:" o; do
         TARGET_HOST=${OPTARG}
         #echo $TARGET_HOST
         ;;
-    c)
-        CLIENTS=${OPTARG:-2}
-        #echo $CLIENTS
+    u)
+        USERS=${OPTARG:-2}
+        #echo $USERS
         ;;
     r)
         REQUESTS=${OPTARG:-10}
