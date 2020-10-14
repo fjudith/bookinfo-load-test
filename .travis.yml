@@ -44,10 +44,10 @@ before_script:
 
 script:
   ## Build and run bookinfo-load-test
-  - kubectl get po,svc,gateway,virtualservice --all-namespaces -o wide
-  - ss -anlp
+  - kubectl get po,svc,ing --all-namespaces -o wide
+  - curl http://localhost/productpage
   - docker build -t ${REPO}:${COMMIT} .
-  - docker run --rm -t ${REPO}:${COMMIT} -d 5 -h http://127.0.0.1 -u 250 -r 60
+  - docker run --rm -t ${REPO}:${COMMIT} -d 5 -h http://localhost -u 250 -r 60
 after_success:
   - docker tag ${REPO}:${COMMIT} ${REPO}:${TAG}
   - if [ -z "$DOCKER_PASS" ] ; then
