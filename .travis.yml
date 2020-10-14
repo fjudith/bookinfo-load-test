@@ -1,4 +1,4 @@
-language: generic
+language: python
 python:
   - 3.6
 sudo: required
@@ -14,9 +14,10 @@ env:
   - TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
   - INSTALL_METALLB=true
   - COMMIT=${TRAVIS_COMMIT::8}
+  - PATH=/opt/python/3.7.1/bin:$PATH
 
 install:
-  - pip3 install locust
+  - pip install locust
 
 before_script:
   ## Kubectl
