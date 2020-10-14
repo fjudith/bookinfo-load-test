@@ -9,4 +9,4 @@ class MyUser(HttpUser):
 
     @task(1)
     def productpage(self):
-        self.client.get("/productpage/")
+        self.client.get("/productpage")
