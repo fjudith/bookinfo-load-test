@@ -43,7 +43,7 @@ before_script:
 
 script:
   ## Build and run bookinfo-load-test
-  - kubectl get po,svc,gateway,virtualservice --all-namespaces
+  - kubectl get po,svc,gateway,virtualservice --all-namespaces -o wide
   - ss -anlp
   - docker build -t ${REPO}:${COMMIT} .
   - docker run --rm -t ${REPO}:${COMMIT} -d 5 -h http://127.0.0.1:${INGRESS_PORT} -u 250 -r 60
