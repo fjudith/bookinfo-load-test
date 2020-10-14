@@ -45,7 +45,7 @@ script:
   ## Build and run bookinfo-load-test
   - kubectl get po,svc,gateway,virtualservice --all-namespaces
   - docker build -t ${REPO}:${COMMIT} .
-  - docker run --rm -t ${REPO}:${COMMIT} -d 180 -h http://127.0.0.1:${INGRESS_PORT} -c 250 -r 60
+  - docker run --rm -t ${REPO}:${COMMIT} -d 5 -h http://127.0.0.1:${INGRESS_PORT} -c 250 -r 60
 after_success:
   - docker tag ${REPO}:${COMMIT} ${REPO}:${TAG}
   - if [ -z "$DOCKER_PASS" ] ; then
