@@ -1,5 +1,6 @@
 language: generic
-python: 3.6
+python:
+  - 3.6
 sudo: required
 services:
   - docker
@@ -16,7 +17,7 @@ env:
   - INSTALL_METALLB=true
   - COMMIT=${TRAVIS_COMMIT::8}
 
-before_install:
+install:
   - pip install locust
 
 before_script:
@@ -32,7 +33,7 @@ before_script:
   # - export KUBECONFIG="$(kind get kubeconfig-path)"
   # - cp "$(kind get kubeconfig-path --name="kind")" /tmp/admin.conf
   ## Contour
-  - kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
+  - kubectl apply --wait -f https://projectcontour.io/quickstart/contour.yaml
   - kubectl patch daemonsets -n projectcontour envoy -p '{"spec":{"template":{"spec":{"nodeSelector":{"ingress-ready":"true"},"tolerations":[{"key":"node-role.kubernetes.io/master","operator":"Equal","effect":"NoSchedule"}]}}}}'
   ## Istio
   - curl -L https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-${ISTIO_VERSION}-linux-amd64.tar.gz | tar xvzf -
@@ -42,9 +43,9 @@ before_script:
   - export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
   ## Bookinfo
   - kubectl label namespace default isio-injection=true
-  - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/platform/kube/bookinfo.yaml --wait
-  - kubectl apply -f istio-${ISTIO_VERSION}/samples/bookinfo/networking/bookinfo-gateway.yaml --wait
-  - kubectl apply -f ${TRAVIS_BUILD_DIR}/hack/bookinfo-ingress.yaml
+  - kubectl apply --wait -f istio-${ISTIO_VERSION}/samples/bookinfo/platform/kube/bookinfo.yaml 
+  - kubectl apply --wait -f istio-${ISTIO_VERSION}/samples/bookinfo/networking/bookinfo-gateway.yaml
+  - kubectl apply --wait -f ${TRAVIS_BUILD_DIR}/hack/bookinfo-ingress.yaml
 
 script:
   ## Binary test
